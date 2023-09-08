@@ -1,0 +1,16 @@
+# rustfmt.toml
+
+# Maximum line width
+max_width = 100
+
+# Indentation style
+# indent_style = "Spaces"
+# indent_size = 2
+tab_spaces = 2
+
+# format_strings = false
+
+# Control flow formatting
+# fn_single_line = "Always"
+
+# More configuration options...
