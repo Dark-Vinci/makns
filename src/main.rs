@@ -2,7 +2,7 @@
 
 use log::{Metadata, Record};
 use serde_json::json;
-use std::fmt::Display;
+use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug, Default)]
 struct Human {
@@ -13,7 +13,7 @@ struct Human {
 }
 
 impl Display for Human {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+  fn fmt(&self, f: &mut Formatter) -> Result {
     write!(f, "what is wrong")
   }
 }
