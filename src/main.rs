@@ -1,8 +1,9 @@
 #![allow(dead_code)]
 
+use std::fmt::{Display, Formatter, Result};
+
 use log::{Metadata, Record};
 use serde_json::json;
-use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug, Default)]
 struct Human {
