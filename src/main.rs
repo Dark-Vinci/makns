@@ -15,7 +15,14 @@ struct Human {
 
 impl Display for Human {
   fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-    write!(f, "My name is {first_name} - {last_name}, i'm {age:0>pad$} years old", first_name = self.first_name, last_name = self.last_name, age = self.age, pad = 3)?;
+    write!(
+      f,
+      "My name is {first_name} - {last_name}, i'm {age:0>pad$} years old",
+      first_name = self.first_name,
+      last_name = self.last_name,
+      age = self.age,
+      pad = 3
+    )?;
 
     if self.friend.is_empty() {
       write!(f, "")?
@@ -37,7 +44,12 @@ impl Display for Human {
 
 impl From<u8> for Human {
   fn from(value: u8) -> Self {
-    Human{ first_name: "".to_string(), last_name: "".to_string(), age: value, friend: vec![] }
+    Human {
+      first_name: "".to_string(),
+      last_name: "".to_string(),
+      age: value,
+      friend: vec![],
+    }
   }
 }
 
@@ -51,14 +63,12 @@ impl TryFrom<Vec<Human>> for Human {
 
     let age = value.len() as u8;
 
-    Ok(
-      Human{
-        friend: value,
-        first_name: "".to_string(),
-        last_name: "".to_string(),
-        age,
-      }
-    )
+    Ok(Human {
+      friend: value,
+      first_name: "".to_string(),
+      last_name: "".to_string(),
+      age,
+    })
   }
 }
 
