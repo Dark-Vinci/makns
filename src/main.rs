@@ -14,8 +14,51 @@ struct Human {
 }
 
 impl Display for Human {
-  fn fmt(&self, f: &mut Formatter) -> Result {
-    write!(f, "what is wrong")
+  fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    write!(f, "My name is {first_name} - {last_name}, i'm {age:0>pad$} years old", first_name = self.first_name, last_name = self.last_name, age = self.age, pad = 3)?;
+
+    if self.friend.is_empty() {
+      write!(f, "")?
+    }
+
+    write!(f, "my friends name are: ")?;
+
+    for (key, value) in self.friend.iter().enumerate() {
+      if key != 0 {
+        write!(f, ", ")?;
+      }
+
+      write!(f, "{count}-{name}", count = key, name = value.first_name)?;
+    }
+
+    write!(f, ".")
+  }
+}
+
+impl From<u8> for Human {
+  fn from(value: u8) -> Self {
+    Human{ first_name: "".to_string(), last_name: "".to_string(), age: value, friend: vec![] }
+  }
+}
+
+impl TryFrom<Vec<Human>> for Human {
+  type Error = String;
+
+  fn try_from(value: Vec<Human>) -> std::result::Result<Self, Self::Error> {
+    if value.is_empty() {
+      return Err(format!("something definitely went wrong"));
+    }
+
+    let age = value.len() as u8;
+
+    Ok(
+      Human{
+        friend: value,
+        first_name: "".to_string(),
+        last_name: "".to_string(),
+        age,
+      }
+    )
   }
 }
 
@@ -120,6 +163,15 @@ fn main() {
   let logger = KeyValueLogger::new();
   log::set_boxed_logger(Box::new(logger)).expect("Failed to set logger");
   log::set_max_level(log::LevelFilter::Info);
+
+  let human: Human = 4u8.into();
+  let hum = Human::from(23u8);
+
+  let turbo_fish = "23".parse::<i32>().expect("something went wrong");
+
+  println!("{:#?}", human);
+  println!("turbo fish {}", turbo_fish);
+  println!("hummus {:#?}", hum);
 
   let _m = LogsMessage::new(
     "message".to_owned(),
