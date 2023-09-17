@@ -1,9 +1,18 @@
 #![allow(dead_code)]
 
+use std::borrow::Cow;
 use std::fmt::{Display, Formatter, Result};
 
 use log::{Metadata, Record};
 use serde_json::json;
+
+fn three_remainder(number: u8) -> Cow<'static, str> {
+  match number % 3 {
+    0 => "zero".into(),
+    1 => "wan".into(),
+    remainder => format!("the remainder is {remainder}", remainder = remainder).into()
+  }
+}
 
 #[derive(Debug, Default)]
 struct Human {
@@ -182,6 +191,13 @@ fn main() {
   println!("{:#?}", human);
   println!("turbo fish {}", turbo_fish);
   println!("hummus {:#?}", hum);
+
+  for num in 0..=5 {
+    match three_remainder(num) {
+      Cow::Borrowed(a) => println!("this is a borrowed value, ||| {0}", a),
+      Cow::Owned(b) => println!("this is an owned value||| {0}", b),
+    }
+  }
 
   let _m = LogsMessage::new(
     "message".to_owned(),
