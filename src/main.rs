@@ -1,7 +1,12 @@
 #![allow(dead_code)]
 
 use std::borrow::Cow;
-use std::fmt::{Display, Formatter, Result};
+use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::num::ParseIntError;
+// use std::fs::
+use std::result::Result;
+// use std::error::Error;
+// use std::any::Any;
 
 use log::{Metadata, Record};
 use serde_json::json;
@@ -22,8 +27,14 @@ struct Human {
   friend: Vec<Human>,
 }
 
+impl PartialEq<Self> for Human {
+  fn eq(&self, other: &Self) -> bool {
+    self.friend.len() == other.friend.len()
+  }
+}
+
 impl Display for Human {
-  fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+  fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
     write!(
       f,
       "My name is {first_name} - {last_name}, i'm {age:0>pad$} years old",
@@ -178,7 +189,7 @@ impl LogsMessage {
   }
 }
 
-fn main() {
+fn main() -> Result<&str, ParseIntError> {
   let logger = KeyValueLogger::new();
   log::set_boxed_logger(Box::new(logger)).expect("Failed to set logger");
   log::set_max_level(log::LevelFilter::Info);
@@ -205,4 +216,6 @@ fn main() {
     "object".to_owned(),
     "main".to_owned(),
   );
+
+  Ok(("finally"))
 }
