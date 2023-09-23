@@ -189,7 +189,7 @@ impl LogsMessage {
   }
 }
 
-fn main() -> Result<&str, ParseIntError> {
+fn main() -> Result<&'static str, ParseIntError> {
   let logger = KeyValueLogger::new();
   log::set_boxed_logger(Box::new(logger)).expect("Failed to set logger");
   log::set_max_level(log::LevelFilter::Info);
