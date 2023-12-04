@@ -3,8 +3,9 @@
 use std::borrow::Cow;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::num::ParseIntError;
+use std::ptr::{ null_mut };
 // use std::fs::
-use std::result::Result;
+use std::result;
 // use std::error::Error;
 // use std::any::Any;
 // use std::path::{Display, is_separator, Path, PathBuf, Prefix, Component, Components, PrefixComponent};
@@ -14,6 +15,128 @@ use std::result::Result;
 
 use log::{Metadata, Record};
 use serde_json::json;
+
+#[derive(Debug)]
+struct Node<T> {
+  data: T,
+  next: *mut Node<T>,
+  prev: *mut Node<T>,
+}
+
+impl<T> Node<T> {
+  fn new(v: T) -> Self {
+    Self {
+      data: v,
+      next: null_mut(),
+      prev: null_mut(),
+    }
+  }
+}
+
+#[derive(Debug)]
+struct LinkedList<T> {
+  head: *mut Node<T>,
+  tail: *mut Node<T>,
+}
+
+impl<T> LinkedList<T> {
+  fn new() -> Self {
+    Self {
+      head: null_mut(),
+      tail: null_mut(),
+    }
+  }
+
+  fn is_empty(&self) -> bool {
+    self.head.is_null()
+  }
+
+  fn front(&mut self, v: T) {
+    let mut node = Box::into_raw(Box::new(Node::new(v)));
+
+    if self.head.is_null() {
+      self.head = node;
+      self.tail = node;
+      return;
+    }
+
+    unsafe {
+      let h = self.head;
+
+      (*node).next = h;
+      (*h).prev = node;
+
+      self.head = node;
+      return;
+    }
+  }
+
+  fn back(&mut self, v: T) {
+    let mut node = Box::into_raw(Box::new(Node::new(v)));
+
+    if self.tail.is_null() {
+      self.head = node;
+      self.tail = node;
+      return;
+    }
+
+    unsafe {
+      let t = self.tail;
+
+      (*node).prev = t;
+      (*t).next = node;
+
+      self.tail = node;
+      return;
+    }
+  }
+
+  fn pop(&mut self) -> Option<T> {
+    if self.tail.is_null() {
+      return None;
+    }
+
+    unsafe {
+      let l = self.tail;
+
+      let prev = (*l).prev;
+
+      if !prev.is_null() {
+        (*prev).next = null_mut();
+        self.tail = null_mut();
+      } else {
+        self.tail = prev;
+      }
+
+      return Some(Box::from_raw(l).data);
+    }
+  }
+
+  fn up(&mut self) -> Option<T> {
+    if self.head.is_null() {
+      return None;
+    }
+
+    unsafe {
+      let h = self.head;
+
+      let next = (*h).next;
+
+      if !next.is_null() {
+        (*next).prev = null_mut();
+        self.head = null_mut();
+      } else {
+        self.head = next;
+      }
+
+      return Some(Box::from_raw(h).data);
+    }
+  }
+
+  fn len(&self) -> usize {
+    1.into()
+  }
+}
 
 fn three_remainder(number: u8) -> Cow<'static, str> {
   match number % 3 {
@@ -80,7 +203,7 @@ impl From<u8> for Human {
 impl TryFrom<Vec<Human>> for Human {
   type Error = String;
 
-  fn try_from(value: Vec<Human>) -> std::result::Result<Self, Self::Error> {
+  fn try_from(value: Vec<Human>) -> result::Result<Self, Self::Error> {
     if value.is_empty() {
       return Err(format!("something definitely went wrong"));
     }
