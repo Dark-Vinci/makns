@@ -3,7 +3,7 @@
 use std::borrow::Cow;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::num::ParseIntError;
-use std::ptr::{ null_mut };
+use std::ptr::null_mut;
 // use std::fs::
 use std::result;
 // use std::error::Error;
